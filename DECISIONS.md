@@ -65,3 +65,18 @@ cost/token accounting; SQLite keeps it queryable and GUI-displayable.
 Subagents own specific paths (see PROGRESS.md). Anything outside that list must
 be flagged to the orchestrator before being touched. Reason: prevents contract
 drift mid-integration.
+
+## D011 — CI workflow file is staged locally, not tracked, until token has scope
+The GitHub token of this machine lacks the `workflow` scope, so GitHub rejects
+pushes containing `.github/workflows/ci.yml`. The file lives on disk and is
+git-ignored. To activate: run `gh auth refresh -h github.com -s workflow`, then
+remove the ignore rule, `git add .github/workflows/ci.yml`, commit, push.
+Reason: blocked push is worse than a temporarily-unpushed CI file.
+
+## D012 — Canonical slot vocabulary is orchestrator-owned
+`deckforge_core/schemas/slot_vocabulary.py` defines exactly which slot names the
+planner may fill per archetype and which ContentKinds each accepts. Renderer
+blueprints map these names to geometry; unknown slot names in a plan are ignored
+with a QA warning. This file is the D↔C contract and must only change with an
+officially recorded schema bump. Reason: planner and renderer run in parallel
+and must agree on slot names without talking.

@@ -52,6 +52,14 @@ from deckforge_core.schemas.qa import (  # noqa: F401
     QASlideResult,
     QASummaryReport,
 )
+from deckforge_core.schemas.slot_vocabulary import (  # noqa: F401
+    SLOT_VOCABULARY,
+    ArchetypeSlots,
+    SlotVocEntry,
+    all_entries,
+    has_vocabulary,
+    slots_for,
+)
 
 __all__ = [
     "Archetype",
@@ -92,4 +100,10 @@ __all__ = [
     "QAIssue",
     "QASlideResult",
     "QASummaryReport",
+    "ArchetypeSlots",
+    "SLOT_VOCABULARY",
+    "SlotVocEntry",
+    "all_entries",
+    "has_vocabulary",
+    "slots_for",
 ]

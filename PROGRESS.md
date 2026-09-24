@@ -16,18 +16,20 @@ for dependency · 🔴 blocked · ✖ cancelled
 | Tests: contracts, providers, storage, config, CLI — all passing | ✅ |
 | Docs: README, DECISIONS, PROGRESS, QA_REPORT | ✅ |
 | Git init + Phase 0 commit | ✅ |
+| Push to github.com/pranavshantagiri/DeckForge (main) | ✅ |
+| Canonical slot vocabulary (D↔C contract) | ✅ |
 
 ## Phase 1 — Workstreams (parallel)
 
 | Workstream | Owner | Depends on | Status |
 | --- | --- | --- | --- |
-| A. Ingest & Parse | ingest/ | schemas | ⬜ not started |
+| A. Ingest & Parse | ingest/ | schemas | 🔄 in progress |
 | B. Archetype & Style Analysis | analysis/ | A output schema | ⬜ not started |
-| C. Renderer | renderer/ | schemas | ⬜ not started |
-| D. AI Planner | planner/ + providers.llm | schemas | ⬜ not started |
+| C. Renderer | renderer/ | schemas | 🔄 in progress |
+| D. AI Planner | planner/ + providers.llm | schemas | 🔄 in progress |
 | E. Images | images/ + providers.images | schemas | ⬜ not started |
-| F. Diagrams | diagrams/ | schemas (GraphSpec) | ⬜ not started |
-| G. Theme | theme/ | schemas (StyleProfile) | ⬜ not started |
+| F. Diagrams | diagrams/ | schemas (GraphSpec) | 🔄 in progress |
+| G. Theme | theme/ | schemas (StyleProfile) | 🔄 in progress |
 | H. QA Loop | qa/ + providers.render | C renderer | ⬜ not started |
 | I. GUI | gui/ | CLI + core API | ⬜ not started |
 | J. Packaging & Tests | packaging/ + tools/ | C, H | ⬜ not started |
