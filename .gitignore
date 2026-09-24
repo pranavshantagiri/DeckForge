@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+.venv/
+venv/
+env/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Runtime data (never commit user decks / packs / secrets)
+%~APPDATA%/DeckForge/
+appdata/
+
+# Corpus is generated or fetched on demand
+corpus/raw/
+corpus/.download-cache/
+corpus/packs/
+
+# Installer outputs
+packaging/build/
+packaging/*.exe
+packaging/Output/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Secrets never committed
+*.key
+*.pem
+.env
+
+# CI workflow is staged locally but NOT tracked until the GitHub token has the
+# `workflow` scope (gh auth refresh -h github.com -s workflow). Once granted:
+#   git rm --cached -r .github  ;  git add .github/workflows/ci.yml ; commit ; push
+.github/workflows/ci.yml
