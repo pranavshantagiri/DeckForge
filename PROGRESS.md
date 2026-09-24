@@ -23,13 +23,13 @@ for dependency · 🔴 blocked · ✖ cancelled
 
 | Workstream | Owner | Depends on | Status |
 | --- | --- | --- | --- |
-| A. Ingest & Parse | ingest/ | schemas | 🔄 in progress |
+| A. Ingest & Parse | ingest/ | schemas | ✅ done — parser, cache, thumbnails, deterministic corpus generator (32-deck sample generated) |
 | B. Archetype & Style Analysis | analysis/ | A output schema | ⬜ not started |
-| C. Renderer | renderer/ | schemas | 🔄 in progress |
-| D. AI Planner | planner/ + providers.llm | schemas | 🔄 in progress |
+| C. Renderer | renderer/ | schemas | ✅ done — canvas, layout, textfit, charts, tables, engine, pack_io |
+| D. AI Planner | planner/ + providers.llm | schemas | 🔄 re-dispatched (first subagent returned nothing) |
 | E. Images | images/ + providers.images | schemas | ⬜ not started |
-| F. Diagrams | diagrams/ | schemas (GraphSpec) | 🔄 in progress |
-| G. Theme | theme/ | schemas (StyleProfile) | 🔄 in progress |
+| F. Diagrams | diagrams/ | schemas (GraphSpec) | ✅ done — layered layout, native shapes/connectors, Mermaid subset |
+| G. Theme | theme/ | schemas (StyleProfile) | ✅ done — contrast, fonts, brief→profile, theme XML builder |
 | H. QA Loop | qa/ + providers.render | C renderer | ⬜ not started |
 | I. GUI | gui/ | CLI + core API | ⬜ not started |
 | J. Packaging & Tests | packaging/ + tools/ | C, H | ⬜ not started |
