@@ -40,8 +40,8 @@ deckforge_core/            # library (no UI dependencies)
   gui/                     # PySide6 desktop interface (Phase 1I)
   storage/                 # SQLite metadata, vector store location
 tests/                     # pytest + golden-file tests
-scripts/                   # corpus generation + fetch
-packaging/                 # Inno Setup script + build wrapper
+tools/                     # corpus generation + fetch (also scripts-style tools)
+packaging/                 # PyInstaller spec + Inno Setup script + build wrapper
 ```
 
 ## Reference implementation status

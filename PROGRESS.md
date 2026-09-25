@@ -31,8 +31,8 @@ for dependency · 🔴 blocked · ✖ cancelled
 | F. Diagrams | diagrams/ | schemas (GraphSpec) | ✅ done — layered layout, native shapes/connectors, Mermaid subset |
 | G. Theme | theme/ | schemas (StyleProfile) | ✅ done — contrast, fonts, brief→profile, theme XML builder |
 | H. QA Loop | qa/ + providers.render | C renderer | ✅ done — checks, autofix, subprocess-COM renderer, vision scoring |
-| I. GUI | gui/ | CLI + core API | ⬜ not started |
-| J. Packaging & Tests | packaging/ + tools/ | C, H | ⬜ not started |
+| I. GUI | gui/ | CLI + core API | ✅ done — PySide6 app (packs, generate+preview, settings), offscreen-safe tests; `deckforge-gui` entry |
+| J. Packaging & Tests | packaging/ + tools/ | C, H | ✅ done — PyInstaller one-dir CLI build verified, Inno Setup script (iscc unavailable locally), offline Apache POI corpus fetcher, 7-test golden e2e (offline, deterministic) |
 
 ## Phase 2 — Integration
 

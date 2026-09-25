@@ -24,6 +24,7 @@ appdata/
 # Corpus is generated or fetched on demand
 corpus/raw/
 corpus/.download-cache/
+corpus/external/
 corpus/packs/
 
 # Installer outputs

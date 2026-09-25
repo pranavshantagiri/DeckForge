@@ -26,7 +26,7 @@ hard acceptance criterion, and ingestion must stay local by default.
 Acceptance says "at least 30 sample decks ... generated or downloaded from
 permissively licensed sources". We build a deterministic **synthetic corpus
 generator** (30+ archetype-varied decks with known ground truth) so CI can run
-golden-file tests offline and cheaply; `scripts/fetch_corpus.py` supplements
+golden-file tests offline and cheaply; `tools/fetch_corpus.py` supplements
 with a small number of permissively-licensed real decks (Wikimedia Commons etc.)
 when a developer opts in. Reason: reproducibility for golden tests beats a
 thousand stale downloaded decks; avoids licensing landmines in the repo.
