@@ -8,6 +8,7 @@ API keys go to the Windows Credential Manager via keyring.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -20,7 +21,14 @@ APP_AUTHOR = "DeckForge"
 
 
 def data_dir() -> Path:
-    """Root data directory, e.g. C:\\Users\\x\\AppData\\Roaming\\DeckForge."""
+    """Root data directory, e.g. C:\\Users\\x\\AppData\\Roaming\\DeckForge.
+
+    Overridable with ``DECKFORGE_DATA_DIR`` so tests and portable installs can
+    redirect all user data without touching the real profile.
+    """
+    override = os.environ.get("DECKFORGE_DATA_DIR")
+    if override:
+        return Path(override).expanduser()
     return Path(platformdirs.user_data_dir(APP_NAME, APP_AUTHOR))
 
 

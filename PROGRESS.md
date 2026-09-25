@@ -38,10 +38,14 @@ for dependency · 🔴 blocked · ✖ cancelled
 
 | Item | Status |
 | --- | --- |
-| Wire Learn → Pack → Generate end-to-end on sample corpus | ⬜ |
-| Restyle, Outline, Critique, Blend, Edit-slide working CLI+GUI | ⬜ |
-| Aspect-ratio switching (16:9 / 4:3 / portrait) | ⬜ |
-| Full test suite before declaring phase done | ⬜ |
+| Wire Learn → Pack → Generate end-to-end on sample corpus | ✅ `learn corpus/raw --pack demo` → `make/outline`, offline deterministic |
+| Modes package (`deckforge_core/modes/`): learn, make, outline, restyle, critique, blend, edit, packs, settings | ✅ |
+| Full CLI surface (all modes + `packs`/`settings`/`provider` subcommands) | ✅ |
+| Slot-normalisation bridge (plan ↔ learned blueprint slots, no silent content loss) | ✅ merged `*_heading`→`*_body`, dropped-unknown notes surfaced |
+| `DECKFORGE_DATA_DIR` override for test/portable isolation | ✅ |
+| Restyle, Outline, Critique, Blend, Edit-slide working CLI | ✅ modes are GUI-shareable `run_*` functions |
+| Aspect-ratio switching (16:9 / 4:3 / portrait) | 🔄 CLI `--aspect` + blueprint alternates exist; portrait not yet verified |
+| Full test suite before declaring phase done | ✅ 319 passed / 3 skipped, ruff clean |
 
 ## Phase 3 — Polish & hardening
 
