@@ -8,6 +8,7 @@ entries: it warns into the caller-provided list and keeps going.
 from __future__ import annotations
 
 import warnings as _warnings_mod
+import zipfile
 from pathlib import Path
 from typing import List, Optional, Sequence, Tuple
 
@@ -92,6 +93,7 @@ def render_deck(
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(out_path))
+    _rewrite_zip_deterministic(out_path)
 
     return RenderResult(
         out_path=out_path,
@@ -99,6 +101,37 @@ def render_deck(
         warnings=sink,
         plan_snapshot=plan.model_dump_json(),
     )
+
+
+# --------------------------------------------------------------------------- #
+# Reproducible builds
+# --------------------------------------------------------------------------- #
+_FIXED_ZIP_MTIME = (1980, 1, 1, 0, 0, 0)
+
+
+def _rewrite_zip_deterministic(path: Path) -> None:
+    """Rewrite the archive with fixed entry timestamps.
+
+    python-pptx stamps each zip entry with the wall-clock time, so two renders
+    that straddle a second boundary are not byte-identical. Normalising the
+    container's timestamps makes DeckForge output reproducible: identical
+    plans, packs and blueprints produce byte-identical .pptx files.
+    """
+    temporary = path.with_name(path.name + ".tmp")
+    try:
+        with zipfile.ZipFile(path, "r") as source, zipfile.ZipFile(
+            temporary, "w"
+        ) as target:
+            for info in source.infolist():
+                fixed = zipfile.ZipInfo(info.filename, date_time=_FIXED_ZIP_MTIME)
+                fixed.compress_type = info.compress_type
+                fixed.comment = info.comment
+                fixed.extra = info.extra
+                target.writestr(fixed, source.read(info.filename))
+        temporary.replace(path)
+    finally:
+        if temporary.exists():
+            temporary.unlink(missing_ok=True)
 
 
 # --------------------------------------------------------------------------- #

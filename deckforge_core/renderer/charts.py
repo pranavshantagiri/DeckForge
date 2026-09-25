@@ -7,8 +7,10 @@ are neutral; the legend follows the spec.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import List
 
+import xlsxwriter.workbook as _xlsxworkbook
 from pptx.chart.data import CategoryChartData
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
@@ -16,6 +18,21 @@ from pptx.util import Pt
 
 from deckforge_core.schemas.deck_plan import ChartSpec
 from deckforge_core.schemas.pack import FormatPack
+
+# Pin the creation timestamp python-pptx's xlsxwriter workbook embeds in
+# ``docProps/core.xml`` so two charts with identical data produce a
+# byte-identical embedded workbook (reproducible builds).
+_FIXED_CREATE_TIME = datetime(1980, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+_ORIGINAL_WORKBOOK_INIT = _xlsxworkbook.Workbook.__init__
+
+
+def _pinned_workbook_init(self, *args, **kwargs):
+    _ORIGINAL_WORKBOOK_INIT(self, *args, **kwargs)
+    self.createtime = _FIXED_CREATE_TIME
+    self.set_properties({"created": _FIXED_CREATE_TIME})
+
+
+_xlsxworkbook.Workbook.__init__ = _pinned_workbook_init
 
 CHART_TYPE_MAP: dict[str, XL_CHART_TYPE] = {
     "column": XL_CHART_TYPE.COLUMN_CLUSTERED,

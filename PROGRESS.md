@@ -23,14 +23,14 @@ for dependency · 🔴 blocked · ✖ cancelled
 
 | Workstream | Owner | Depends on | Status |
 | --- | --- | --- | --- |
-| A. Ingest & Parse | ingest/ | schemas | ✅ done — parser, cache, thumbnails, deterministic corpus generator (32-deck sample generated) |
-| B. Archetype & Style Analysis | analysis/ | A output schema | ⬜ not started |
+| A. Ingest & Parse | ingest/ | schemas | ✅ done — parser, cache, thumbnails, deterministic corpus generator (36-deck sample, 18/18 archetypes detected) |
+| B. Archetype & Style Analysis | analysis/ | A output schema | ✅ done — archetype detector (18 archetypes), blueprint slots, KMeans style profile, learn_pack |
 | C. Renderer | renderer/ | schemas | ✅ done — canvas, layout, textfit, charts, tables, engine, pack_io |
-| D. AI Planner | planner/ + providers.llm | schemas | 🔄 re-dispatched (first subagent returned nothing) |
-| E. Images | images/ + providers.images | schemas | ⬜ not started |
+| D. AI Planner | planner/ + providers.llm | schemas | ✅ done — prompts, pricing, lint, slide/plan planner; Anthropic/Gemini/OpenAI/local providers |
+| E. Images | images/ + providers.images | schemas | ✅ done — local library, remote providers, attribution, dhash/rank, registry bootstrap |
 | F. Diagrams | diagrams/ | schemas (GraphSpec) | ✅ done — layered layout, native shapes/connectors, Mermaid subset |
 | G. Theme | theme/ | schemas (StyleProfile) | ✅ done — contrast, fonts, brief→profile, theme XML builder |
-| H. QA Loop | qa/ + providers.render | C renderer | ⬜ not started |
+| H. QA Loop | qa/ + providers.render | C renderer | ✅ done — checks, autofix, subprocess-COM renderer, vision scoring |
 | I. GUI | gui/ | CLI + core API | ⬜ not started |
 | J. Packaging & Tests | packaging/ + tools/ | C, H | ⬜ not started |
 

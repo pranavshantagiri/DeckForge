@@ -121,3 +121,32 @@ def test_generator_writes_payloads(tmp_path: Path) -> None:
             assert "texts" in slide_meta
             assert isinstance(slide_meta["texts"], list)
             assert all(isinstance(t, str) for t in slide_meta["texts"])
+
+
+# --------------------------------------------------------------------------- #
+# 4. Every generated archetype must be detectable (detector <-> generator lock)
+# --------------------------------------------------------------------------- #
+def test_every_generated_archetype_is_detected(tmp_path: Path) -> None:
+    """The corpus generator builds one real instance of each canonical
+    archetype; the detector must recognise every one. Guards the rule-order
+    traps (timeline vs two-column-text, agenda vs statement, section-divider
+    vs two-column-text) against silent regressions."""
+    from deckforge_core.analysis.archetype import detect_archetype
+    from deckforge_core.ingest import extract_deck
+
+    out = tmp_path / "corpus"
+    generate_corpus.main(["--out", str(out), "--decks", "16", "--seed",
+                          "20240316"])
+    expected = {"title", "section-divider", "big-number", "quote", "chart",
+                "table", "statement", "closing", "image-left", "image-right",
+                "full-bleed-image", "three-cards", "comparison",
+                "two-column-text", "agenda", "timeline", "process-flow",
+                "team"}
+    detected: dict[str, int] = {}
+    for pptx_path in out.glob("deck_*.pptx"):
+        deck = extract_deck(pptx_path)
+        for slide in deck.slides:
+            archetype, _ = detect_archetype(slide)
+            detected[archetype] = detected.get(archetype, 0) + 1
+    missing = expected - set(detected)
+    assert not missing, f"detector never fired for: {sorted(missing)}"

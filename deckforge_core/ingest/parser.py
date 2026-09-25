@@ -62,8 +62,19 @@ class IngestResult:
 # --------------------------------------------------------------------------- #
 # Small extraction primitives
 # --------------------------------------------------------------------------- #
-def _rgb_to_hex(rgb) -> str:
-    return f"#{int(rgb):06X}"
+def _rgb_to_hex(rgb) -> Optional[str]:
+    if rgb is None:
+        return None
+    try:
+        if isinstance(rgb, (tuple, list)):
+            r, g, b = (int(channel) & 0xFF for channel in rgb)
+            return f"#{r:02X}{g:02X}{b:02X}"
+        value = str(rgb)
+        if len(value) == 6 and not value.startswith("#"):
+            return f"#{value}"
+        return value
+    except Exception:
+        return None
 
 
 def _fill_hex(shape) -> Optional[str]:
