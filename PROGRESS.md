@@ -51,7 +51,7 @@ for dependency · 🔴 blocked · ✖ cancelled
 
 | Item | Status |
 | --- | --- |
-| Performance: ingest ~500 decks with multiprocessing | ⬜ |
+| Performance: ingest ~500 decks with multiprocessing | ✅ `ingest/batch.py::extract_directory_parallel`, `learn --workers N` (0=auto, heuristic caps spawn overhead on small corpora); deterministic parity with serial, cache written parent-side; 96-deck corpus: 13.2s → 5.5s (~2.4x); full CLI learn 32 decks 1.25x |
 | Error handling + logging polish, first-run experience | ⬜ |
 | PyInstaller + Inno Setup build, installer smoke test | ⬜ |
 | Blind-style review + `QA_REPORT.md` findings | ⬜ |

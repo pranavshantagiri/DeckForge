@@ -23,6 +23,7 @@ def run_learn(
     *,
     use_cache: bool = True,
     max_decks: int = 0,
+    workers: int = 1,
 ) -> LearnSummary:
     source = Path(source).expanduser()
     if not source.is_dir():
@@ -40,6 +41,7 @@ def run_learn(
         target_dir=pack_dir_for(name),
         use_cache=use_cache,
         max_decks=max_decks,
+        workers=workers,
     )
     target = pack_dir_for(name)
     return summarize_pack(pack, target)

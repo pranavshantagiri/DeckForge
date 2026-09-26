@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 from deckforge_core.analysis.archetype import detect_archetype
 from deckforge_core.analysis.blueprint import blueprints_from_slides
@@ -89,13 +90,21 @@ def learn_pack(
     target_dir: Path,
     use_cache: bool = True,
     max_decks: int = 0,
+    workers: Optional[int] = None,
 ) -> FormatPack:
     """Ingest ``folder`` and build + persist a :class:`FormatPack`.
 
     ``max_decks`` caps how many extracted decks are analysed (0 = no limit).
-    The returned pack is also saved via ``save_pack`` into ``target_dir``.
+    ``workers`` enables parallel extraction (0 = auto via CPU count, ``None``/1 =
+    serial) — deterministic either way. The returned pack is also saved via
+    ``save_pack`` into ``target_dir``.
     """
-    result = extract_directory(folder, use_cache=use_cache)
+    if workers and workers != 1:
+        from deckforge_core.ingest.batch import extract_directory_parallel
+
+        result = extract_directory_parallel(folder, workers=workers, use_cache=use_cache)
+    else:
+        result = extract_directory(folder, use_cache=use_cache)
     decks = [deck for deck in result.decks if deck.slides]
     if max_decks > 0:
         decks = decks[:max_decks]

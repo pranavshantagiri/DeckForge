@@ -71,11 +71,18 @@ def learn(
     name: str = typer.Option("", "--name", "-n", help="Pack name (default: source folder name)"),
     use_cache: bool = typer.Option(True, "--use-cache/--no-cache", help="Reuse analysed slides"),
     max_decks: int = typer.Option(0, "--max-decks", help="Cap how many decks are analysed (0 = all)"),
+    workers: int = typer.Option(0, "--workers", help="Parallel extraction workers (0 = auto)"),
 ) -> None:
     """Build a Format Pack from real decks."""
     try:
         pack_name = name or Path(source).name
-        result = run_learn(source, pack_name, use_cache=use_cache, max_decks=max_decks)
+        result = run_learn(
+            source,
+            pack_name,
+            use_cache=use_cache,
+            max_decks=max_decks,
+            workers=workers,
+        )
     except (ModeError, DeckForgeError) as exc:
         _fail(str(exc))
 
