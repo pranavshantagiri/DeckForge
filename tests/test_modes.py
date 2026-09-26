@@ -93,6 +93,25 @@ def test_make_missing_pack_raises(tmp_path, monkeypatch):
         run_make("something", "not-a-pack", str(tmp_path / "x"))
 
 
+@pytest.mark.parametrize(
+    ("aspect", "expected_landscape"),
+    [("16:9", True), ("4:3", True), ("portrait", False), ("9:16", False)],
+)
+def test_make_aspect_ratios(tmp_path, packed, monkeypatch, aspect, expected_landscape):
+    from pptx import Presentation
+    from pptx.util import Emu
+
+    monkeypatch.setenv("DECKFORGE_DATA_DIR", str(tmp_path))
+    out = tmp_path / (aspect.replace(":", "-"))
+    result = run_make(
+        "Aspect check", "demo", str(out), slides=6, aspect=aspect
+    )
+    assert result.out_path.endswith(".pptx")
+    presentation = Presentation(result.out_path)
+    landscape = Emu(presentation.slide_width) > Emu(presentation.slide_height)
+    assert landscape is expected_landscape
+
+
 def test_outline_matches_prompt_length(tmp_path, packed, monkeypatch):
     monkeypatch.setenv("DECKFORGE_DATA_DIR", str(tmp_path))
     lines = run_outline("Quarterly review", "demo", slides=6)

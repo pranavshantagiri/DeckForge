@@ -44,7 +44,7 @@ for dependency · 🔴 blocked · ✖ cancelled
 | Slot-normalisation bridge (plan ↔ learned blueprint slots, no silent content loss) | ✅ merged `*_heading`→`*_body`, dropped-unknown notes surfaced |
 | `DECKFORGE_DATA_DIR` override for test/portable isolation | ✅ |
 | Restyle, Outline, Critique, Blend, Edit-slide working CLI | ✅ modes are GUI-shareable `run_*` functions |
-| Aspect-ratio switching (16:9 / 4:3 / portrait) | 🔄 CLI `--aspect` + blueprint alternates exist; portrait not yet verified |
+| Aspect-ratio switching (16:9 / 4:3 / portrait) | ✅ `--aspect` verified: 4:3 (10×7.5 in), portrait/9:16 (8.27×11.69 in A4), QA clean |
 | Full test suite before declaring phase done | ✅ 319 passed / 3 skipped, ruff clean |
 
 ## Phase 3 — Polish & hardening
