@@ -90,3 +90,35 @@ def test_settings_set_list_cli(cli_env):
     assert result.exit_code == 0
     result = runner.invoke(app, ["settings", "get", "local_only"])
     assert "true" in result.stdout
+
+
+def test_first_run_make_shows_onboarding_hint(cli_env):
+    """With zero packs installed, `make` must guide instead of raw-failing."""
+    result = runner.invoke(
+        app, ["make", "Roadmap", "--slides", "3", "--out", str(cli_env / "deck")]
+    )
+    assert result.exit_code == 1
+    combined = result.stdout + result.stderr
+    assert "pack 'demo' not found" in combined
+    assert "First run?" in combined
+    assert "deckforge learn" in combined
+
+
+def test_missing_custom_pack_no_onboarding_hint(cli_env):
+    """An explicit wrong pack name is a plain error, not first-run coaching."""
+    result = runner.invoke(
+        app, ["make", "Roadmap", "--pack", "nope", "--slides", "3"]
+    )
+    assert result.exit_code == 1
+    combined = result.stdout + result.stderr
+    assert "pack 'nope' not found" in combined
+    assert "First run?" not in combined
+
+
+def test_loglevel_errors_write_traceback_file(cli_env):
+    """`log_error` persists an ERROR traceback under the (test) data dir."""
+    from deckforge_core.logging_util import log_error
+
+    log_path = log_error(RuntimeError("synthetic failure"), context="test")
+    assert log_path.exists()
+    assert "synthetic failure" in log_path.read_text(encoding="utf-8")

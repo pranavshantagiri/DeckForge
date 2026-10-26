@@ -15,6 +15,7 @@ from deckforge_core.modes.common import (
     pptx_path,
     resolve_pack,
 )
+from deckforge_core.modes.compose import ComposeResult, run_compose
 from deckforge_core.modes.critique import run_critique
 from deckforge_core.modes.edit import EditResult, EditSpec, parse_edit, run_edit
 from deckforge_core.modes.learn import run_learn
@@ -24,6 +25,7 @@ from deckforge_core.modes.restyle import run_restyle
 
 __all__ = [
     "BlendResult",
+    "ComposeResult",
     "EditResult",
     "EditSpec",
     "LearnSummary",
@@ -38,6 +40,7 @@ __all__ = [
     "pptx_path",
     "resolve_pack",
     "run_blend",
+    "run_compose",
     "run_critique",
     "run_edit",
     "run_learn",

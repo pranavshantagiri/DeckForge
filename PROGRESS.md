@@ -45,13 +45,14 @@ for dependency · 🔴 blocked · ✖ cancelled
 | `DECKFORGE_DATA_DIR` override for test/portable isolation | ✅ |
 | Restyle, Outline, Critique, Blend, Edit-slide working CLI | ✅ modes are GUI-shareable `run_*` functions |
 | Aspect-ratio switching (16:9 / 4:3 / portrait) | ✅ `--aspect` verified: 4:3 (10×7.5 in), portrait/9:16 (8.27×11.69 in A4), QA clean |
-| Full test suite before declaring phase done | ✅ 319 passed / 3 skipped, ruff clean |
+| Full test suite before declaring phase done | ✅ 341 collected / 0 failures / 3 skipped (live-COM opt-in), ruff clean |
 
 ## Phase 3 — Polish & hardening
 
 | Item | Status |
 | --- | --- |
 | Performance: ingest ~500 decks with multiprocessing | ✅ `ingest/batch.py::extract_directory_parallel`, `learn --workers N` (0=auto, heuristic caps spawn overhead on small corpora); deterministic parity with serial, cache written parent-side; 96-deck corpus: 13.2s → 5.5s (~2.4x); full CLI learn 32 decks 1.25x |
-| Error handling + logging polish, first-run experience | ⬜ |
-| PyInstaller + Inno Setup build, installer smoke test | ⬜ |
+| Error handling + logging polish, first-run experience | ✅ `_fatal` logs full tracebacks to `logs/deckforge.log` and shows a short message + log path; top-level guard means no raw traceback can reach the terminal; missing default pack now prints a "First run? deckforge learn ..." hint; fixed stale log-handler when `DECKFORGE_DATA_DIR` moves |
+| Template + per-slide content (`compose`) | ✅ `deckforge compose TEMPLATE.pptx content.json`: extracts the template's own style/blueprints on the fly (no corpus needed), maps content keys to slots, picks the best-fitting layout per slide, and renders a native editable deck; verified QA PASS on a 6-slide composition |
+| PyInstaller + Inno Setup build, installer smoke test | ⬜ (Inno blocked locally: no `iscc.exe`; PyInstaller build not yet run) |
 | Blind-style review + `QA_REPORT.md` findings | ⬜ |

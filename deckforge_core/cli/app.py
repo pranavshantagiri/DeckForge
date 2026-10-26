@@ -17,9 +17,12 @@ from rich.table import Table
 from deckforge_core import __version__
 from deckforge_core.config import data_dir, ensure_dirs
 from deckforge_core.errors import DeckForgeError
+from deckforge_core.logging_util import log_error
 from deckforge_core.modes import (
     ModeError,
+    list_packs,
     run_blend,
+    run_compose,
     run_critique,
     run_edit,
     run_learn,
@@ -40,6 +43,27 @@ err_console = Console(stderr=True)
 def _fail(message: str) -> None:
     err_console.print(f"[red]error:[/red] {message}")
     raise typer.Exit(1)
+
+
+def _fatal(exc: BaseException, hint: str = "") -> None:
+    """Report an exception: short message up front, full traceback to the log."""
+    log_path = log_error(exc)
+    message = str(exc) or type(exc).__name__
+    if hint:
+        message = f"{message}\n  {hint}"
+    err_console.print(f"[red]error:[/red] {message}")
+    err_console.print(f"[dim]details logged to {log_path}[/dim]")
+    raise typer.Exit(1)
+
+
+def _pack_hint(pack_spec: str) -> str:
+    """First-run guidance when the default demo pack is missing entirely."""
+    if pack_spec == "demo" and not list_packs():
+        return (
+            "First run? Build a demo pack from your own decks:\n"
+            "    deckforge learn <folder-with-pptx> --name demo"
+        )
+    return ""
 
 
 # --------------------------------------------------------------------------- #
@@ -84,7 +108,7 @@ def learn(
             workers=workers,
         )
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
 
     table = Table(title=f"Format Pack [bold]{result.pack.name}[/bold]")
     table.add_column("deck count")
@@ -134,7 +158,7 @@ def make(
             warnings=warnings,
         )
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc, hint=_pack_hint(pack_spec))
 
     table = Table(title=f"Deck from pack [bold]{result.plan.pack}[/bold]")
     table.add_column("slides")
@@ -165,7 +189,7 @@ def restyle(
     try:
         result = run_restyle(deck_path, pack_spec, out, warnings=warnings)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc, hint=_pack_hint(pack_spec))
     for warn in warnings:
         err_console.print(f"[yellow]warning:[/yellow] {warn}")
     console.print(f"[green]restyled:[/green] {result.out_path} ({result.slide_count} slides)")
@@ -193,7 +217,7 @@ def outline(
             provider=provider or None,
         )
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc, hint=_pack_hint(pack_spec))
     for line in lines:
         console.print(f"[dim]{line.n:>2}.[/dim] {line.archetype:<20} {line.title}")
 
@@ -209,7 +233,7 @@ def critique(
     try:
         report = run_critique(deck_path, pack_spec, out_dir=out_dir, render_backend=render_backend)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc, hint=_pack_hint(pack_spec))
 
     status = "[bold green]PASS[/bold green]" if report.passed_check else "[bold red]FAIL[/bold red]"
     console.print(
@@ -237,7 +261,7 @@ def blend(
     try:
         result = run_blend(pack_a, pack_b, name)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
     table = Table(title=f"Blended pack [bold]{result.name}[/bold]")
     table.add_column("archetypes")
     table.add_column("source decks")
@@ -270,13 +294,37 @@ def edit(
             warnings=warnings,
         )
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc, hint=_pack_hint(pack_spec or "demo"))
     for warn in warnings:
         err_console.print(f"[yellow]warning:[/yellow] {warn}")
     console.print(
         f"[green]applied {result.applied} edit(s) ->[/green] {result.render.out_path} "
         f"({result.render.slide_count} slides)"
     )
+
+
+@app.command("compose", no_args_is_help=True)
+def compose(
+    template: str = typer.Argument(..., help="Template .pptx whose format to reuse"),
+    content: str = typer.Argument(..., help="JSON content file (array of slide objects)"),
+    out: str = typer.Option("", "--out", "-o", help="Output .pptx path (default: data dir)"),
+    aspect: str = typer.Option("", "--aspect", help="Aspect ratio override (default: template's)"),
+) -> None:
+    """Fill a template with your per-slide content, rendered in its format."""
+    if not out:
+        out = str(ensure_dirs()["decks"] / (_slug(Path(template).stem) + "-composed"))
+    notes: list[str] = []
+    try:
+        result = run_compose(template, content, out, aspect=aspect or None, warnings=notes)
+    except (ModeError, DeckForgeError) as exc:
+        _fatal(exc)
+    table = Table(title=f"Composed deck from template [bold]{Path(template).name}[/bold]")
+    table.add_column("slides")
+    table.add_row(str(result.slide_count))
+    console.print(table)
+    for note in notes:
+        err_console.print(f"[yellow]note:[/yellow] {note}")
+    console.print(f"[green]saved:[/green] {result.out_path}")
 
 
 # --------------------------------------------------------------------------- #
@@ -309,7 +357,7 @@ def packs_show(name: str = typer.Argument(...)) -> None:
     try:
         summary = cmd_show(name)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
     console.print(f"[bold]{summary.pack.name}[/bold] — {summary.decks} decks, {summary.slides} slides")
     console.print(f"archetypes: {', '.join(summary.pack.archetypes)}")
     console.print(
@@ -329,7 +377,7 @@ def packs_delete(name: str = typer.Argument(...), yes: bool = typer.Option(False
     try:
         cmd_delete(name)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
     console.print(f"[green]deleted pack {name}[/green]")
 
 
@@ -341,7 +389,7 @@ def packs_path(name: str = typer.Argument(...)) -> None:
     try:
         console.print(cmd_path(name))
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
 
 
 # --------------------------------------------------------------------------- #
@@ -379,7 +427,7 @@ def settings_set(key: str = typer.Argument(...), value: str = typer.Argument(...
     try:
         stored = cmd_set(key, value)
     except (ModeError, DeckForgeError) as exc:
-        _fail(str(exc))
+        _fatal(exc)
     console.print(f"{key} = {_repr_value(stored)}")
 
 
@@ -429,7 +477,12 @@ def _repr_value(value) -> str:
 
 
 def main() -> None:
-    app()
+    try:
+        app()
+    except DeckForgeError as exc:
+        _fatal(exc)
+    except Exception as exc:  # last line of defense: never surface a raw traceback
+        _fatal(exc)
 
 
 if __name__ == "__main__":
